@@ -1,0 +1,252 @@
+#!/usr/bin/env python3
+
+import math
+import sys
+
+def print_help():
+  print('USAGE')
+  print('\t./102architect x y transfo1 arg1 [arg12] [transfo2 arg12 [arg22]] ...\n')
+  print('DESCRIPTION')
+  print('\tx  abscissa of the original point')
+  print('\ty  ordinate of the original point\n')
+  print('\t tarnsfo arg1 [arg2]')
+  print('\t-t i j translation along vector (i, j)')
+  print('\t-z m n scaling by factors m (x-axis) and n (y-axis)')
+  print('\t-r d   rotation centered in 0 by a d degree angle')
+  print('\t-s d   reflection over the axis passing through 0 with an inclination')
+  print('\t       angle of d degrees')
+  sys.exit(0)
+
+def check_flag_z(argv, index, max):
+    try:
+        isinstance(argv[index + 1], int)
+        isinstance(argv[index + 2], int)
+    except:
+        print('False input, try ./102architect -h for more informations')
+        sys.exit(84)
+    try:
+        if (index + 3) <= max -1:
+            if (argv[index + 3] == "-s" or argv[index + 3] == "-r" or argv[index + 3] == "-t" or argv[index + 3] == "-z"):
+                a = 0;
+            else:
+                exit(0);
+    except:
+        print('False input, try ./102architect -h for more informations')
+        sys.exit(84)
+
+def check_flag_t(argv, index, max):
+    try:
+        isinstance(argv[index + 1], int)
+        isinstance(argv[index + 2], int)
+    except:
+        print('False input, try ./102architect -h for more informations')
+        sys.exit(84)
+    try:
+        if (index + 3) <= max -1:
+            if (argv[index + 3] == "-s" or argv[index + 3] == "-r" or argv[index + 3] == "-z" or argv[index + 3] == "-t"):
+                a = 0;
+            else:
+                exit(0);
+    except:
+        print('False input, try ./102architect -h for more informations')
+        sys.exit(84)
+
+def check_flag_r(argv, index, max):
+    try:
+        isinstance(argv[index + 1], int)
+    except:
+        print('False input, try ./102architect -h for more informations')
+        sys.exit(84)
+    try:
+        if (index + 2) <= max -1:
+            if (argv[index + 2] == "-s" or argv[index + 2] == "-t" or argv[index + 2] == "-z" or argv[index + 2] == "-r"):
+                a = 0;
+            else:
+                exit(0);
+    except:
+        print('False input, try ./102architect -h for more informations')
+        sys.exit(84)
+
+def check_flag_s(argv, index, max):
+    try:
+        isinstance(argv[index + 1], int)
+    except:
+        print('False input, try ./102architect -h for more informations')
+        sys.exit(84)
+    try:
+        if (index + 2) <= max -1:
+            if (argv[index + 2] == "-r" or argv[index + 2] == "-t" or argv[index + 2] == "-z" or argv[index + 2] == "-s"):
+                a = 0;
+            else:
+                exit(0);
+    except:
+        print('False input, try ./102architect -h for more informations')
+        sys.exit(84)
+
+def matrix_calc_scaling(m, n):
+    print('{:8}'.format('{:.2f}'.format(float(m))) + '{:8}'.format("0.00") + '{:8}'.format("0.00"))
+    print('{:8}'.format("0.00") + '{:8}'.format('{:.2f}'.format(float(n))) + '{:8}'.format("0.00"))
+    print('{:8}'.format("0.00") + '{:8}'.format("0.00") + "1.00")
+
+def scaling(x, y, m, n, id):
+    resultx= float(x) * float(m)
+    resulty= float(y) * float(n)
+    print('Scaling by factors', int(m), 'and', int(n))
+    if (id == 1):
+        return (resultx, resulty)
+    else:
+        matrix_calc_scaling(m, n)
+
+    return (resultx, resulty)
+
+def matrix_calc_trans(i, j):
+    print('{:8}'.format("1.00") + '{:8}'.format("0.00") + '{:.2f}'.format(float(i)))
+    print('{:8}'.format("0.00") + '{:8}'.format("1.00") + '{:.2f}'.format(float(j)))
+    print('{:8}'.format("0.00") + '{:8}'.format("0.00") + "1.00")
+
+def translation(x, y, i, j, id):
+    x = float(x)
+    y = float(y)
+    i = float(i)
+    j = float(j)
+
+    print("Translation along vector (" + str(i) + ", " + str(j) + ")")
+
+    if (id == 1):
+        return (x + i, y + j)
+    else:
+        matrix_calc_trans(i,j)
+
+    return (float(x + i) ,float(y) + float(j))
+
+
+def matrix_calc_rotaion(alpha):
+    print('{:8}'.format('{:.2f}'.format(float(math.cos(math.radians(alpha))))) + '{:8}'.format('{:.2f}'.format(float(-math.sin(math.radians(alpha))))) + "0.00")
+    print('{:8}'.format('{:.2f}'.format(float(math.sin(math.radians(alpha))))) + '{:8}'.format('{:.2f}'.format(float(math.cos(math.radians(alpha))))) + "0.00")
+    print('{:8}'.format("0.00") + '{:8}'.format("0.00") + "1.00")
+
+def rotation(x, y, alpha, id):
+    x = float(x)
+    y = float(y)
+    x1 = float(math.cos(math.radians(int(alpha))))
+    y1 = float(-math.sin(math.radians(int(alpha))))
+    x2 = float(math.sin(math.radians(int(alpha))))
+    y2 = float(math.cos(math.radians(int(alpha))))
+
+    print("Rotation by a " + str(alpha) + " degree angle")
+
+    if (id == 1):
+        return (float((x * x1) + (y * y1)), float((x * x2) + (y * y2)))
+    else:
+        matrix_calc_rotaion(alpha)
+
+    return (float((x * x1) + (y * y1)),float((x * x2) + (y * y2)))
+
+
+def matrix_calc_reflection(alpha):
+    print('{:8}'.format('{:.2f}'.format(float(math.cos(math.radians(2 * alpha))))) + '{:8}'.format('{:.2f}'.format(float(math.sin(math.radians(2 * alpha))))) + "0.00")
+    print('{:8}'.format('{:.2f}'.format(float(math.sin(math.radians(2 * alpha))))) + '{:8}'.format('{:.2f}'.format(float(-math.cos(math.radians(2 * alpha))))) + "0.00")
+    print('{:8}'.format("0.00") + '{:8}'.format("0.00") + "1.00")
+
+
+def reflection(x, y, alpha, id):
+    x = float(x)
+    y = float(y)
+    x1 = float(math.cos(math.radians(2 * alpha)))
+    y1 = float(math.sin(math.radians(2 * alpha)))
+    x2 = float(math.sin(math.radians(2 * alpha)))
+    y2 = float(-math.cos(math.radians(2 * alpha)))
+
+    print("Reflection over an axis with an inclination angle of " + str(alpha) + " degree")
+
+    if (id == 1):
+        return (float((x * x1) + (y * y1)), float((x * x2) + (y * y2)))
+    else:
+        matrix_calc_reflection(alpha)
+
+    return (float((x * x1) + (y * y1)), float((x * x2) + (y * y2)))
+
+def check_argv(argv, id):
+    max = len(argv)
+    index = 3
+    i = 1
+
+    while (index < 4):
+        if (id == 1):
+            i = 0
+
+        if (argv[index] == "-t"):
+            t = translation(argv[1], argv[2], argv[4], argv[5], i)
+            id -= 1
+        if (argv[index] == "-r"):
+            t = rotation(argv[1], argv[2], int(argv[4]), i)
+            id -= 1
+        if (argv[index] == "-z"):
+            t = scaling(argv[1], argv[2], argv[4], argv[5], i)
+            id -= 1
+        if (argv[index] == "-s"):
+            t = reflection(argv[1], argv[2], int(argv[4]), i)
+            id -= 1
+        index += 1
+
+    while (index != max):
+        if (id == 1):
+            i = 0
+        if (argv[index] == "-t"):
+            t = translation(t[0], t[1], argv[index + 1], argv[index + 2], i)
+            id -= 1
+        if (argv[index] == "-r"):
+            t =  rotation(t[0], t[1] , int(argv[index +1]), i)
+            id -= 1
+        if (argv[index] == "-z"):
+            t = scaling(t[0], t[1] , argv[index + 1], argv[index + 2], i)
+            id -= 1
+        if (argv[index] == "-s"):
+            t = reflection(t[0], t[1] , int(argv[index + 1]), i)
+            id -= 1
+        index +=1
+    print("(" + '{:.2f}'.format(float(argv[1])) + ", " + '{:.2f}'.format(float(argv[2])) + ") =>" + " (" + '{:.2f}'.format(float(t[0])) + ", " + '{:.2f}'.format(float(t[1])) + ")")
+
+def check_input(argv):
+    if (len(argv) < 4):
+        if (len(argv) == 2):
+            if(argv[1] == "-h"):
+                print_help()
+                sys.exit(0)
+        print('False input, try ./102architect -h for more informationss')
+        sys.exit(84)
+
+    try:
+        max = len(argv)
+        index = 3
+        id = 0
+        while (index != max):
+            if (argv[index] == "-h"):
+                print_help();
+                sys.exit(0)
+            if (argv[index] == "-t"):
+                check_flag_t(argv, index, max)
+                id += 1
+            if (argv[index] == "-r"):
+                check_flag_r(argv, index, max)
+                id += 1
+            if (argv[index] == "-z"):
+                check_flag_z(argv, index, max)
+                id += 1
+            if (argv[index] == "-s"):
+                check_flag_s(argv, index, max)
+                id += 1
+            index += 1
+    except:
+        print('False input, try ./102architect -h for more informations')
+        sys.exit(84)
+    return id
+
+def main(argv):
+    id = check_input(argv)
+    check_argv(argv, id)
+    return 0
+
+
+if __name__ == '__main__':
+    main(sys.argv)
